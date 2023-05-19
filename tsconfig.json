@@ -4,7 +4,7 @@
     "target": "ESNext",
     "lib": ["es2020"],
     "outDir": "host",
-    "rootDir": "make",
+    "rootDir": ".",
     "sourceMap": true,
     "moduleResolution": "node",
     "strictNullChecks": true,
@@ -17,6 +17,6 @@
     "typeRoots": ["node_modules/@types"],
     "noImplicitAny": true
   },
-  "include": ["*.ts", "src/**/*.ts"],
+  "include": ["*.ts", "src/**/*.ts", "*.d.ts"],
   "exclude": ["node_modules"]
 }

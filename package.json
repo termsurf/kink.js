@@ -2,12 +2,17 @@
   "name": "@lancejpollard/halt.js",
   "type": "module",
   "version": "0.0.1",
+  "main": "./host/index.js",
   "license": "MIT",
+  "files": [
+    "./host/index.js"
+  ],
   "scripts": {
     "build": "tsc && tsc-alias",
     "watch": "concurrently --kill-others \"tsc -w\" \"tsc-alias -w\"",
     "lint": "eslint --ext .ts ./make",
-    "lint:fix": "npm run lint -- --fix"
+    "lint:fix": "npm run lint -- --fix",
+    "example": "node ./host/example"
   },
   "devDependencies": {
     "@trivago/prettier-plugin-sort-imports": "^4.0.0",
@@ -33,5 +38,8 @@
     "ts-node": "^10.9.1",
     "tsc-alias": "^1.8.2",
     "typescript": "^4.9.4"
+  },
+  "dependencies": {
+    "ts-custom-error": "^3.3.1"
   }
 }
