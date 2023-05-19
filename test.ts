@@ -1,4 +1,4 @@
-import halt, { assertHalt } from './index.js'
+import { assertHalt, halt } from './example.js'
 
 try {
   halt('one')

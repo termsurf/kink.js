@@ -1,4 +1,4 @@
-import { Halt, HaltList } from './index.js'
+import halt, { Halt, HaltList, assertHalt } from './index.js'
 
 const HALT: HaltList = {
   one: {
@@ -13,6 +13,8 @@ const HALT: HaltList = {
   },
 }
 
-export type HaltType = typeof HALT
+export { Halt, assertHalt, halt }
 
 Halt.list = HALT
+
+export type HaltType = typeof HALT
