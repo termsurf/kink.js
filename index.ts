@@ -1,7 +1,7 @@
 import { CustomError } from 'ts-custom-error'
 
 export class Halt extends CustomError {
-  form: HaltName
+  form: keyof HaltList
 
   link: HaltLink
 
@@ -17,7 +17,7 @@ export class Halt extends CustomError {
     note: string,
   ) => `[${code}] ${note}`
 
-  constructor(form: HaltName, link: HaltLink = {}) {
+  constructor(form: keyof HaltList, link: HaltLink = {}) {
     if (!(form in Halt.list)) {
       throw new Error(`Name ${form} missing from halt list`)
     }
@@ -81,8 +81,6 @@ export interface HaltList {
   [key: string]: HaltHook
 }
 
-export type HaltName = keyof HaltList
-
 export function assertHalt(x: unknown): asserts x is Halt {
   if (!isHalt(x)) {
     throw new Error('Error is not a halt. ' + (x as Error).message)
@@ -93,6 +91,9 @@ export function isHalt(x: unknown): x is Halt {
   return x instanceof Halt
 }
 
-export default function halt(form: HaltName, link: HaltLink = {}) {
+export default function halt(
+  form: keyof HaltList,
+  link: HaltLink = {},
+) {
   throw new Halt(form, link)
 }
