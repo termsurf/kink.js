@@ -76,7 +76,8 @@ export type HaltHook = {
 
 export type HaltLink = Record<string, unknown>
 
-export type HaltList = {
+// eslint-disable-next-line @typescript-eslint/consistent-type-definitions
+export interface HaltList {
   [key: string]: HaltHook
 }
 
