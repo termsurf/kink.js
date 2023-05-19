@@ -1,6 +1,6 @@
-import halt, { Halt, HaltHook, assertHalt } from './index.js'
+import { Halt, HaltList } from './index.js'
 
-const HALT: Record<string, HaltHook> = {
+const HALT: HaltList = {
   one: {
     code: 1,
     host: 'example',
@@ -13,12 +13,6 @@ const HALT: Record<string, HaltHook> = {
   },
 }
 
-Halt.list = HALT
+export type HaltType = typeof HALT
 
-try {
-  halt('one')
-} catch (e) {
-  assertHalt(e)
-  console.log(e.toJSON())
-  halt('two', { size: 2 })
-}
+Halt.list = HALT
