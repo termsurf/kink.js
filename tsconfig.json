@@ -15,7 +15,8 @@
     "noErrorTruncation": true,
     "types": ["node"],
     "typeRoots": ["node_modules/@types"],
-    "noImplicitAny": true
+    "noImplicitAny": true,
+    "declaration": true
   },
   "include": ["*.ts", "src/**/*.ts", "*.d.ts"],
   "exclude": ["node_modules"]
