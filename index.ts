@@ -12,10 +12,11 @@ export class Halt extends CustomError {
     code.toString(16).padStart(4, '0').toUpperCase()
 
   // your template for rendering codes.
-  static make: (code: string, note: string) => string = (
+  static make: (host: string, code: string, note: string) => string = (
+    host: string,
     code: string,
     note: string,
-  ) => `[${code}] ${note}`
+  ) => `[${host}:${code}] ${note}`
 
   constructor(form: keyof HaltList, link: HaltLink = {}) {
     if (!(form in Halt.list)) {
@@ -31,7 +32,7 @@ export class Halt extends CustomError {
     const note =
       typeof hook.note === 'function' ? hook.note(link) : hook.note
     const code = Halt.code(hook.code)
-    const text = Halt.make(code, note)
+    const text = Halt.make(hook.host, code, note)
 
     super(text)
 
@@ -70,6 +71,8 @@ export class Halt extends CustomError {
 export type HaltHook = {
   code: number
   hint?: string | ((link: HaltLink) => string)
+  // the project defining this
+  host: string
   note: string | ((link: HaltLink) => string)
   term?: Array<string> | ((link: HaltLink) => Array<string>)
 }
