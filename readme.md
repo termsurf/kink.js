@@ -1,7 +1,7 @@
 # Halt.js
 
 ```
-yarn add @lancejpollard/halt.js
+yarn add @tunebond/halt.js
 ```
 
 ## Example
@@ -11,53 +11,33 @@ yarn add @lancejpollard/halt.js
 Say we put these in `./errors`:
 
 ```ts
-import { Halt } from '@lancejpollard/halt.js'
+import { Base, Halt, Link } from '@tunebond/halt.js'
 
 import { convertIntegerToId } from '../utils/id'
 import { permute8 } from '../utils/prng'
 
-const host = 'tree.surf'
-
-type Link = Record<string, unknown>
-
-const HALT = {
+const base: Base = {
   invalid_form: {
     code: 3,
-    host,
-    note: ({ name }: Link) => `Form '${name}' is not valid`,
+    note: ({ name }) => `Form '${name}' is not valid`,
   },
   invalid_type: {
     code: 2,
-    host,
-    note: ({ name, type }: Link) =>
-      `Value '${name}' is not '${type}' type`,
+    note: ({ name, type }) => `Value '${name}' is not '${type}' type`,
   },
   missing_property: {
     code: 1,
-    host,
-    note: ({ name }: Link) => `Property '${name}' missing`,
+    note: ({ name }) => `Property '${name}' missing`,
   },
 }
 
-export { Halt }
+type Name = keyof typeof base
 
-export type HaltType = typeof HALT
-
-Halt.list = HALT
-Halt.code = (code: number) =>
+const formCode = (code: number) =>
   convertIntegerToId(permute8(code)).padStart(4, 'M')
-```
 
-#### Override type
-
-In a file such as `./overrides.d.ts`
-
-```
-import { HaltType } from './errors'
-
-declare module '@lancejpollard/halt.js' {
-  export interface HaltList extends HaltType {}
-}
+export const halt = (name: Name, link: Link<Name>) =>
+  new Halt(base, name, link, formCode)
 ```
 
 #### Throw the Errors
@@ -65,12 +45,11 @@ declare module '@lancejpollard/halt.js' {
 Now somewhere else in the code:
 
 ```ts
-import { Halt } from '@lancejpollard/halt.js'
+import { halt } from './errors'
 
 try {
-  throw new Halt('one')
+  throw halt('invalid_type', { name: 'foo', type: 'array' })
 } catch (e) {
   console.log(e.toJSON()) // perfect for REST APIs
-  throw new Halt('two', { size: 2 })
 }
 ```
