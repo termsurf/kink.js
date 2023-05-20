@@ -7,13 +7,6 @@ export type Base = {
 
 export type Bind = Record<string, unknown>
 
-// type Make = {
-//   base: Base
-//   code?: (code: number) => string
-//   form: string
-//   link: Bind
-//   text?: (code: string, note: string) => string
-// }
 export type Form = {
   code: number
   hint?: (link: Bind) => string
