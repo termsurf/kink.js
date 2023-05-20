@@ -1,107 +1,106 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { CustomError } from 'ts-custom-error'
 
-export class Halt extends CustomError {
-  form: HaltName
+export type Base = {
+  [key: string]: Form
+}
 
-  link: HaltLink
+export type Bind = Record<string, unknown>
 
-  static list: HaltList = {}
+// type Make = {
+//   base: Base
+//   code?: (code: number) => string
+//   form: string
+//   link: Bind
+//   text?: (code: string, note: string) => string
+// }
+export type Form = {
+  code: number
+  hint?: (link: Bind) => string
+  note: (link: Bind) => string
+}
 
-  // make your codes cool.
-  static code: (code: number) => string = (code: number) =>
-    code.toString(16).padStart(4, '0').toUpperCase()
+export class Halt<B, N extends keyof B & string> extends CustomError {
+  form: string
 
-  // your template for rendering codes.
-  static make: (host: string, code: string, note: string) => string = (
-    host: string,
-    code: string,
-    note: string,
-  ) => `[${host}:${code}] ${note}`
+  code: string
 
-  constructor(form: HaltName, link: HaltLink = {}) {
-    if (!(form in Halt.list)) {
-      throw new Error(`Name ${form} missing from halt list`)
-    }
+  constructor({
+    base,
+    form,
+    link = {},
+    code = makeCode,
+    text = makeText,
+  }: Make<B, N>) {
+    const hook = base[form] as Form
 
-    const hook = Halt.list[form]
+    const { note } = hook
+    const makeNote = note as unknown as UnionToIntersection<typeof note>
+    const n = makeNote(link)
 
-    if (!hook) {
-      throw new Error(`Hook ${form} is missing from halt list`)
-    }
+    const c = code(hook.code)
+    const t = text(c, n)
 
-    const note =
-      typeof hook.note === 'function' ? hook.note(link) : hook.note
-    const code = Halt.code(hook.code)
-    const text = Halt.make(hook.host, code, note)
-
-    super(text)
+    super(t)
 
     Object.defineProperty(this, 'form', {
       enumerable: false,
       value: form,
     })
 
-    Object.defineProperty(this, 'link', {
+    Object.defineProperty(this, 'code', {
       enumerable: false,
-      value: link,
+      value: c,
+    })
+
+    Object.defineProperty(this, 'name', {
+      enumerable: false,
+      value: 'Halt',
     })
 
     this.form = form
-    this.link = link
-
-    Object.defineProperty(this, 'name', { value: 'Halt' })
+    this.code = c
   }
 
   toJSON() {
-    const hook = Halt.list[this.form]
-
-    if (!hook) {
-      throw new Error()
-    }
-
-    const note =
-      typeof hook.note === 'function' ? hook.note(this.link) : hook.note
-    const code = Halt.code(hook.code)
-    const term = hook.term
-
-    return { code, note, term }
+    return { code: this.code, form: this.form, text: this.message }
   }
 }
 
-export type HaltHook = {
-  code: number
-  hint?: string | ((link: HaltLink) => string)
-  // the project defining this
-  host: string
-  note: string | ((link: HaltLink) => string)
-  term?: Array<string> | ((link: HaltLink) => Array<string>)
+export type Link<B, N extends keyof B & string> = Parameters<
+  B[N] extends { note: (link: any) => string }
+    ? B[N]['note'] extends (...args: any) => any
+      ? B[N]['note']
+      : never
+    : never
+>[0]
+
+export type Make<B, N extends keyof B & string> = {
+  base: B
+  code?: (code: number) => string
+  form: N
+  link: Link<B, N>
+  text?: (code: string, note: string) => string
 }
 
-export type HaltLink = Record<string, unknown>
+type UnionToIntersection<U> = (
+  U extends any ? (k: U) => void : never
+) extends (k: infer I) => void
+  ? I
+  : never
 
-// eslint-disable-next-line @typescript-eslint/consistent-type-definitions
-export interface HaltList {
-  [key: string]: HaltHook
+export const makeCode = (code: number) =>
+  code.toString(16).padStart(4, '0').toUpperCase()
+
+export default function makeHalt<B, N extends keyof B & string>({
+  base,
+  form,
+  link,
+  code,
+  text,
+}: Make<B, N>) {
+  return new Halt({ base, code, form, link, text })
 }
 
-export type HaltName = keyof OmitIndexSignature<HaltList>
-
-export type OmitIndexSignature<ObjectType> = {
-  [KeyType in keyof ObjectType as {} extends Record<KeyType, unknown>
-    ? never
-    : KeyType]: ObjectType[KeyType]
-}
-
-export function assertHalt(x: unknown): asserts x is Halt {
-  if (!isHalt(x)) {
-    throw new Error('Error is not a halt. ' + (x as Error).message)
-  }
-}
-
-export default function halt(form: HaltName, link: HaltLink = {}) {
-  throw new Halt(form, link)
-}
-
-export function isHalt(x: unknown): x is Halt {
-  return x instanceof Halt
-}
+export const makeText = (code: string, note: string) =>
+  `[${code}] ${note}`

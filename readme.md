@@ -6,41 +6,53 @@ yarn add @tunebond/halt.js
 
 ## Example
 
-#### Configure the Errors
+### Configure the Errors
 
 Say we put these in `./errors`:
 
 ```ts
-import { Base, Halt, Link } from '@tunebond/halt.js'
+import makeHalt, { Link } from '@tunebond/halt.js'
 
 import { convertIntegerToId } from '../utils/id'
 import { permute8 } from '../utils/prng'
 
-const base: Base = {
+type WithName = {
+  name: string
+}
+
+type WithType = WithName & {
+  type: string
+}
+
+const base = {
   invalid_form: {
     code: 3,
-    note: ({ name }) => `Form '${name}' is not valid`,
+    note: ({ name }: WithName) => `Form '${name}' is not valid`,
   },
   invalid_type: {
     code: 2,
-    note: ({ name, type }) => `Value '${name}' is not '${type}' type`,
+    note: ({ name, type }: WithType) =>
+      `Value '${name}' is not '${type}' type`,
   },
   missing_property: {
     code: 1,
-    note: ({ name }) => `Property '${name}' missing`,
+    note: ({ name }: WithName) => `Property '${name}' missing`,
   },
 }
 
-type Name = keyof typeof base
+type Base = typeof base
 
-const formCode = (code: number) =>
+type Name = keyof Base
+
+const code = (code: number) =>
   convertIntegerToId(permute8(code)).padStart(4, 'M')
 
-export const halt = (name: Name, link: Link<Name>) =>
-  new Halt(base, name, link, formCode)
+export default function halt(form: Name, link: Link<Base, Name>) {
+  return makeHalt({ base, form, link, code })
+}
 ```
 
-#### Throw the Errors
+### Throw the Errors
 
 Now somewhere else in the code:
 

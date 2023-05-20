@@ -1,20 +1,33 @@
-import halt, { Halt, HaltList, assertHalt } from './index.js'
+import makeHalt, { Link } from './index'
 
-const HALT: HaltList = {
-  one: {
-    code: 1,
-    host: 'example',
-    note: 'First error',
+type WithName = {
+  name: string
+}
+
+type WithType = WithName & {
+  type: string
+}
+
+const base = {
+  invalid_form: {
+    code: 3,
+    note: ({ name }: WithName) => `Form '${name}' is not valid`,
   },
-  two: {
+  invalid_type: {
     code: 2,
-    host: 'example',
-    note: ({ size }) => `There are ${size} things.`,
+    note: ({ name, type }: WithType) =>
+      `Value '${name}' is not '${type}' type`,
+  },
+  missing_property: {
+    code: 1,
+    note: ({ name }: WithName) => `Property '${name}' missing`,
   },
 }
 
-export { Halt, assertHalt, halt }
+type Base = typeof base
 
-Halt.list = HALT
+type Name = keyof Base
 
-export type HaltType = typeof HALT
+export default function halt(form: Name, link: Link<Base, Name>) {
+  return makeHalt({ base, form, link })
+}
