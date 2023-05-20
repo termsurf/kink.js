@@ -13,7 +13,10 @@ export type Form = {
   note: (link: Bind) => string
 }
 
-export class Halt<B, N extends keyof B & string> extends CustomError {
+export default class Halt<
+  B,
+  N extends keyof B & string,
+> extends CustomError {
   form: string
 
   code: string
@@ -83,16 +86,6 @@ type UnionToIntersection<U> = (
 
 export const makeCode = (code: number) =>
   code.toString(16).padStart(4, '0').toUpperCase()
-
-export default function makeHalt<B, N extends keyof B & string>({
-  base,
-  form,
-  link,
-  code,
-  text,
-}: Make<B, N>) {
-  return new Halt({ base, code, form, link, text })
-}
 
 export const makeText = (code: string, note: string) =>
   `[${code}] ${note}`
