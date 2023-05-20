@@ -68,11 +68,7 @@ export class Halt<B, N extends keyof B & string> extends CustomError {
 }
 
 export type Link<B, N extends keyof B & string> = Parameters<
-  B[N] extends { note: (link: any) => string }
-    ? B[N]['note'] extends (...args: any) => any
-      ? B[N]['note']
-      : never
-    : never
+  B[N] extends { note: (link: any) => string } ? B[N]['note'] : never
 >[0]
 
 export type Make<B, N extends keyof B & string> = {
