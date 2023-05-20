@@ -11,7 +11,7 @@ yarn add @tunebond/halt.js
 Say we put these in `./errors`:
 
 ```ts
-import makeHalt, { Link } from '@tunebond/halt.js'
+import Halt, { Link } from '@tunebond/halt.js'
 
 import { convertIntegerToId } from '../utils/id'
 import { permute8 } from '../utils/prng'
@@ -48,7 +48,7 @@ const code = (code: number) =>
   convertIntegerToId(permute8(code)).padStart(4, 'M')
 
 export default function halt(form: Name, link: Link<Base, Name>) {
-  return makeHalt({ base, form, link, code })
+  return new Halt({ base, form, link, code })
 }
 ```
 
