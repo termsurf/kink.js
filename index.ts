@@ -18,6 +18,8 @@ export class Halt<B, N extends keyof B & string> extends CustomError {
 
   code: string
 
+  note: string
+
   constructor({
     base,
     form,
@@ -53,10 +55,11 @@ export class Halt<B, N extends keyof B & string> extends CustomError {
 
     this.form = form
     this.code = c
+    this.note = n
   }
 
   toJSON() {
-    return { code: this.code, form: this.form, text: this.message }
+    return { code: this.code, form: this.form, note: this.note }
   }
 }
 
