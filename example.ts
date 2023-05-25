@@ -1,4 +1,4 @@
-import Halt, { Link } from './index'
+import Halt, { Link } from './index.js'
 
 type WithName = {
   name: string
@@ -29,5 +29,5 @@ type Base = typeof base
 type Name = keyof Base
 
 export default function halt(form: Name, link: Link<Base, Name>) {
-  return new Halt({ base, form, link })
+  return new Halt({ base, form, host: '@tunebond/halt', link })
 }

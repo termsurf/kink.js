@@ -1,7 +1,7 @@
-# Halt.js
+# halt
 
 ```
-yarn add @tunebond/halt.js
+yarn add @tunebond/halt
 ```
 
 ## Example
@@ -11,7 +11,7 @@ yarn add @tunebond/halt.js
 Say we put these in `./errors`:
 
 ```ts
-import Halt, { Link } from '@tunebond/halt.js'
+import Halt, { Link } from '@tunebond/halt'
 
 import { convertIntegerToId } from '../utils/id'
 import { permute8 } from '../utils/prng'

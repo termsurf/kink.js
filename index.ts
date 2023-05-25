@@ -19,12 +19,15 @@ export default class Halt<
 > extends CustomError {
   form: string
 
+  host: string
+
   code: string
 
   note: string
 
   constructor({
     base,
+    host,
     form,
     link = {},
     code = makeCode,
@@ -37,9 +40,14 @@ export default class Halt<
     const n = makeNote(link)
 
     const c = code(hook.code)
-    const t = text(c, n)
+    const t = text(host, c, n)
 
     super(t)
+
+    Object.defineProperty(this, 'host', {
+      enumerable: false,
+      value: host,
+    })
 
     Object.defineProperty(this, 'form', {
       enumerable: false,
@@ -56,13 +64,19 @@ export default class Halt<
       value: 'Halt',
     })
 
+    this.host = host
     this.form = form
     this.code = c
     this.note = n
   }
 
   toJSON() {
-    return { code: this.code, form: this.form, note: this.note }
+    return {
+      code: this.code,
+      form: this.form,
+      host: this.host,
+      note: this.note,
+    }
   }
 }
 
@@ -74,8 +88,9 @@ export type Make<B, N extends keyof B & string> = {
   base: B
   code?: (code: number) => string
   form: N
+  host: string
   link: Link<B, N>
-  text?: (code: string, note: string) => string
+  text?: (host: string, code: string, note: string) => string
 }
 
 type UnionToIntersection<U> = (
@@ -87,5 +102,5 @@ type UnionToIntersection<U> = (
 export const makeCode = (code: number) =>
   code.toString(16).padStart(4, '0').toUpperCase()
 
-export const makeText = (code: string, note: string) =>
-  `[${code}] ${note}`
+export const makeText = (host: string, code: string, note: string) =>
+  `${host} [${code}] ${note}`
