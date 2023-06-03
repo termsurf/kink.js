@@ -59,6 +59,11 @@ Halt: @tunebond/halt [0003] Form 'string' is not valid
 ... stack trace
 ```
 
+This is nice because it gives you slightly better context as to what
+library or app is throwing the error (using the `host` property), and
+the codes make it easier to search the web for the error (if your
+library/app potentially becomes popular).
+
 Finally, you define the `halt` function which you use in your library or
 app, and export it out:
 
