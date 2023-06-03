@@ -10,6 +10,14 @@ You specify errors with a `code` which is an integer, and a `note` which
 is the message generating function.
 
 ```ts
+type WithName = {
+  name: string
+}
+
+type WithType = WithName & {
+  type: string
+}
+
 const base = {
   invalid_form: {
     code: 3,
