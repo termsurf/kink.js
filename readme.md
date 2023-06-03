@@ -4,7 +4,7 @@
 yarn add @tunebond/halt
 ```
 
-## Notes
+## Overview
 
 You specify errors with a `code` which is an integer. The default
 integer stringifier is like this:
