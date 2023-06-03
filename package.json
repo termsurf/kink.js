@@ -1,7 +1,7 @@
 {
   "name": "@tunebond/halt",
   "type": "module",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "main": "./host/index.js",
   "license": "MIT",
   "files": [
@@ -9,11 +9,11 @@
     "./host/index.d.ts"
   ],
   "scripts": {
-    "build": "tsc && tsc-alias",
-    "watch": "concurrently --kill-others \"tsc -w\" \"tsc-alias -w\"",
+    "make": "tsc && tsc-alias",
+    "scan": "concurrently --kill-others \"tsc -w\" \"tsc-alias -w\"",
     "lint": "eslint --ext .ts ./make",
     "lint:fix": "npm run lint -- --fix",
-    "example": "node ./host/example"
+    "test": "npx ts-node-esm test.ts"
   },
   "devDependencies": {
     "@trivago/prettier-plugin-sort-imports": "^4.0.0",

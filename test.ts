@@ -1,3 +1,7 @@
-import halt from './example'
+import halt from './example.js'
 
-halt('invalid_form', { name: 'string' })
+try {
+  throw halt('invalid_form', { name: 'string' })
+} catch (e) {
+  console.log(e)
+}
