@@ -65,25 +65,7 @@ the codes make it easier to search the web for the error (if your
 library/app potentially becomes popular).
 
 Finally, you define the `halt` function which you use in your library or
-app, and export it out:
-
-```ts
-import Halt, { Link } from '@tunebond/halt'
-
-// this is an optionally defined function
-export const code = (code: number) =>
-  code.toString(16).padStart(4, '0').toUpperCase()
-
-// this is an optionally defined function
-export const text = (host: string, code: string, note: string) =>
-  `${host} [${code}] ${note}`
-
-export default function halt(form: Name, link: Link<Base, Name>) {
-  return new Halt({ base, form, link, code, text })
-}
-```
-
-A full example is next.
+app, and export it out. A full example of that is next.
 
 ## Example
 
