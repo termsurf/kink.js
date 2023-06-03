@@ -6,11 +6,31 @@ yarn add @tunebond/halt
 
 ## Overview
 
-You specify errors with a `code` which is an integer. The default
-integer stringifier is like this:
+You specify errors with a `code` which is an integer, and a `note` which
+is the message generating function.
 
 ```ts
-export const code = (code: number) =>
+const base = {
+  invalid_form: {
+    code: 3,
+    note: ({ name }: WithName) => `Form '${name}' is not valid`,
+  },
+  invalid_type: {
+    code: 2,
+    note: ({ name, type }: WithType) =>
+      `Value '${name}' is not '${type}' type`,
+  },
+  missing_property: {
+    code: 1,
+    note: ({ name }: WithName) => `Property '${name}' missing`,
+  },
+}
+```
+
+The default integer stringifier for the `code` is like this:
+
+```ts
+export const makeCode = (code: number) =>
   code.toString(16).padStart(4, '0').toUpperCase()
 ```
 
@@ -19,7 +39,7 @@ So it will print `000F` for code number 16, etc.
 You can also format the text:
 
 ```ts
-export const text = (host: string, code: string, note: string) =>
+export const makeText = (host: string, code: string, note: string) =>
   `${host} [${code}] ${note}`
 ```
 
