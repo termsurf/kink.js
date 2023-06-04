@@ -1,7 +1,7 @@
 {
   "name": "@tunebond/halt",
   "type": "module",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "main": "./host/index.js",
   "license": "MIT",
   "files": [

@@ -15,7 +15,7 @@ export type Form = {
 
 export default class Halt<
   B,
-  N extends keyof B & string,
+  N extends keyof B & string = keyof B & string,
 > extends CustomError {
   form: string
 
@@ -24,6 +24,8 @@ export default class Halt<
   code: string
 
   note: string
+
+  link: Link<B, N>
 
   constructor({
     base,
@@ -64,27 +66,45 @@ export default class Halt<
       value: 'Halt',
     })
 
+    Object.defineProperty(this, 'link', {
+      enumerable: false,
+      value: link,
+    })
+
     this.host = host
     this.form = form
     this.code = c
     this.note = n
+    this.link = link
   }
 
-  toJSON() {
+  toJSON(): HaltMesh {
     return {
       code: this.code,
       form: this.form,
       host: this.host,
+      link: this.link,
       note: this.note,
     }
   }
 }
 
-export type Link<B, N extends keyof B & string> = Parameters<
+export type HaltMesh = {
+  code: string
+  form: string
+  host: string
+  link: Record<string, unknown>
+  note: string
+}
+
+export type Link<
+  B,
+  N extends keyof B & string = keyof B & string,
+> = Parameters<
   B[N] extends { note: (link: any) => string } ? B[N]['note'] : never
 >[0]
 
-export type Make<B, N extends keyof B & string> = {
+export type Make<B, N extends keyof B & string = keyof B & string> = {
   base: B
   code?: (code: number) => string
   form: N
@@ -99,8 +119,36 @@ type UnionToIntersection<U> = (
   ? I
   : never
 
+export function haveHalt<
+  B,
+  N extends keyof B & string = keyof B & string,
+>(lead: unknown): asserts lead is Halt<B, N> {
+  if (!testHalt<B, N>(lead)) {
+    if (lead instanceof Error) {
+      throw lead
+    } else {
+      throw new Error('Not halt')
+    }
+  }
+}
+
 export const makeCode = (code: number) =>
   code.toString(16).padStart(4, '0').toUpperCase()
 
 export const makeText = (host: string, code: string, note: string) =>
   `${host} [${code}] ${note}`
+
+export function saveHalt<
+  B,
+  N extends keyof B & string = keyof B & string,
+>(list: Array<HaltMesh>, lead: unknown) {
+  haveHalt<B, N>(lead)
+  list.push(lead.toJSON())
+}
+
+export function testHalt<
+  B,
+  N extends keyof B & string = keyof B & string,
+>(lead: unknown): lead is Halt<B, N> {
+  return lead instanceof Halt
+}
