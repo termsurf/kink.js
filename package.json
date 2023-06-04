@@ -1,7 +1,7 @@
 {
   "name": "@tunebond/halt",
   "type": "module",
-  "version": "0.1.1",
+  "version": "0.1.3",
   "main": "./host/index.js",
   "license": "MIT",
   "files": [
@@ -13,7 +13,8 @@
     "scan": "concurrently --kill-others \"tsc -w\" \"tsc-alias -w\"",
     "lint": "eslint --ext .ts ./make",
     "lint:fix": "npm run lint -- --fix",
-    "test": "npx ts-node-esm test.ts"
+    "test": "npx ts-node-esm test.ts",
+    "host": "pnpm make && npm publish --access=public"
   },
   "devDependencies": {
     "@trivago/prettier-plugin-sort-imports": "^4.0.0",
