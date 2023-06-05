@@ -1,11 +1,12 @@
 {
   "name": "@tunebond/halt",
   "type": "module",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "main": "./host/index.js",
   "license": "MIT",
   "files": [
     "./host/index.js",
+    "./host/index.js.map",
     "./host/index.d.ts"
   ],
   "scripts": {
