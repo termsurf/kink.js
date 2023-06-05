@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { HaltTone, makeText, saveLinkList } from 'text'
 import { CustomError } from 'ts-custom-error'
 
 export type Base = {
@@ -135,8 +136,40 @@ export function haveHalt<
 export const makeCode = (code: number) =>
   code.toString(16).padStart(4, '0').toUpperCase()
 
-export const makeText = (host: string, code: string, note: string) =>
-  `${host} [${code}] ${note}`
+export function makeHalt<
+  B,
+  N extends keyof B & string = keyof B & string,
+>({
+  base,
+  host,
+  form,
+  link = {},
+  code = makeCode,
+  text = makeText,
+  tone = 'fall',
+}: Make<B, N> & { tone: HaltTone }): void {
+  // Error.stackTraceLimit = Infinity
+
+  const prepareStackTrace = Error.prepareStackTrace
+
+  Error.prepareStackTrace = function prepareStackTrace(
+    halt: Error,
+    list: Array<NodeJS.CallSite>,
+  ) {
+    return saveLinkList(halt, list, tone)
+  }
+
+  const halt = new Halt({ base, code, form, host, link, text })
+  halt.name = ''
+
+  Error.captureStackTrace(halt)
+
+  halt.stack
+
+  Error.prepareStackTrace = prepareStackTrace
+
+  return halt
+}
 
 export function saveHalt<
   B,

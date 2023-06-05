@@ -42,6 +42,7 @@
     "typescript": "^5.0.4"
   },
   "dependencies": {
+    "@tunebond/tint": "^0.0.1",
     "ts-custom-error": "^3.3.1"
   }
 }
