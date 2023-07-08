@@ -1,24 +1,31 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { CustomError } from 'ts-custom-error'
+
+export type BaseHook<T extends any = any> = (
+  link?: T,
+) => KinkMeshBase & Link
+
+export type FillHook<T extends any = any> = (link?: T) => Link
+
+export type KinkMesh = {
+  code: string
+  file?: string
+  form: string
+  hint?: string
+  host: string
+  link?: Link
+  note: string
+  text?: string
+}
 
 export type KinkMeshBase = {
   code: number
   note: string
 }
 
-export type KinkMesh = {
-  host: string
-  link: Link
-  form: string
-  code: string
-  note: string
-}
-
-export type Hook = (link?: Link) => Link & KinkMeshBase
-
-const base: Record<string, Hook> = {}
-const fill: Record<string, Hook> = {}
+const base: Record<string, BaseHook> = {}
+const fill: Record<string, FillHook> = {}
 const code: Record<string, (code: number) => string> = {}
-const show: Record<string, (link?: Link) => string> = {}
 
 export default class Kink extends CustomError {
   form: string
@@ -29,9 +36,15 @@ export default class Kink extends CustomError {
 
   note: string
 
+  file?: string
+
+  text?: string
+
+  hint?: string
+
   link: Link
 
-  static base = (host: string, form: string, hook: Hook) => {
+  static base = (host: string, form: string, hook: BaseHook) => {
     base[`${host}:${form}`] = hook
     return Kink
   }
@@ -41,7 +54,7 @@ export default class Kink extends CustomError {
     return Kink
   }
 
-  static fill = (host: string, form: string, hook: Hook) => {
+  static fill = (host: string, form: string, hook: FillHook) => {
     fill[`${host}:${form}`] = hook
     return Kink
   }
@@ -51,13 +64,12 @@ export default class Kink extends CustomError {
     if (!hook) {
       throw new Error(`Missing ${host}:${form} in Kink.base`)
     }
-    const hookLink = hook(link)
+    const hookLink = hook(link) as KinkMeshBase & Link
     return {
       ...hookLink,
       code: Kink.makeCode(host, hookLink.code),
-      host,
       form,
-      link,
+      host,
     }
   }
 
@@ -66,7 +78,11 @@ export default class Kink extends CustomError {
     if (!hook) {
       throw new Error(`Missing ${host}:${form} in Kink.fill`)
     }
-    return hook(link)
+    const baseFill = Kink.makeBase(host, form, link)
+    return {
+      ...baseFill,
+      ...hook(link),
+    }
   }
 
   static makeCode = (host: string, codeLink: number) => {
@@ -77,21 +93,35 @@ export default class Kink extends CustomError {
     return hook(codeLink)
   }
 
-  static makeShow = (host: string, form: string, link?: Link) => {
-    const hook = show[form]
-    if (!hook) {
-      throw new Error(`Missing ${host}:${form} in Kink.show`)
-    }
-    return hook(link)
-  }
-
-  static show = (host: string, form: string, hook: (link?: Link) => string) => {
-    show[`${host}:${form}`] = hook
-    return Kink
-  }
-
-  constructor({ host, note, form, link = {}, code }: KinkMesh) {
+  constructor({
+    host,
+    note,
+    form,
+    link = {},
+    file,
+    text,
+    hint,
+    code,
+  }: KinkMesh) {
     super(note)
+
+    Object.defineProperty(this, 'file', {
+      enumerable: false,
+      value: file,
+      writable: true,
+    })
+
+    Object.defineProperty(this, 'text', {
+      enumerable: false,
+      value: text,
+      writable: true,
+    })
+
+    Object.defineProperty(this, 'hint', {
+      enumerable: false,
+      value: hint,
+      writable: true,
+    })
 
     Object.defineProperty(this, 'note', {
       enumerable: false,
@@ -130,6 +160,9 @@ export default class Kink extends CustomError {
     })
 
     this.host = host
+    this.file = file
+    this.text = text
+    this.hint = hint
     this.code = code
     this.note = note
     this.link = link
@@ -139,10 +172,13 @@ export default class Kink extends CustomError {
   toJSON(): KinkMesh {
     return {
       code: this.code,
+      file: this.file,
+      form: this.form,
+      hint: this.hint,
       host: this.host,
       link: this.link,
-      form: this.form,
       note: this.note,
+      text: this.text,
     }
   }
 }
