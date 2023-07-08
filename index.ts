@@ -1,54 +1,80 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { CustomError } from 'ts-custom-error'
 
-export type Base = {
-  [key: string]: Form
+export type HaltMesh = {
+  code: string
+  host: string
+  link: Link
+  name: string
+  note: string
 }
 
-export type Bind = Record<string, unknown>
+export type Hook = (link: Link) => Link
 
-export type Form = {
-  code: number
-  hint?: (link: Bind) => string
-  note: (link: Bind) => string
+const base: Record<string, Hook> = {}
+const head: Record<string, Hook> = {}
+const code: Record<string, (code: number) => string> = {}
+const show: Record<string, (link: Link) => string> = {}
+
+const Halt = {
+  base: (host: string, name: string, hook: Hook) => {
+    base[`${host}:${name}`] = hook
+    return Halt
+  },
+  code: (host: string, hook: (code: number) => string) => {
+    code[host] = hook
+    return Halt
+  },
+  head: (host: string, name: string, hook: Hook) => {
+    head[`${host}:${name}`] = hook
+    return Halt
+  },
+  makeBase: (host: string, name: string, link: Link) => {
+    const hook = base[name]
+    if (!hook) {
+      throw new Error(`Missing ${host}:${name} in Halt.base`)
+    }
+    return {
+      ...hook(link),
+      host,
+      name,
+    }
+  },
+  makeHead: (host: string, name: string, link: Link) => {
+    const hook = head[name]
+    if (!hook) {
+      throw new Error(`Missing ${host}:${name} in Halt.head`)
+    }
+    return hook(link)
+  },
+  makeShow: (host: string, name: string, link: Link) => {
+    const hook = show[name]
+    if (!hook) {
+      throw new Error(`Missing ${host}:${name} in Halt.show`)
+    }
+    return hook(link)
+  },
+  show: (host: string, name: string, hook: (link: Link) => string) => {
+    show[`${host}:${name}`] = hook
+    return Halt
+  },
 }
 
-export default class Halt<
-  B,
-  N extends keyof B & string = keyof B & string,
-> extends CustomError {
-  form: string
-
+export default class Kink extends CustomError {
   host: string
 
   code: string
 
   note: string
 
-  link: Link<B, N>
+  link: Link
 
-  constructor({
-    base,
-    host,
-    form,
-    link = {},
-    code = makeCode,
-    text = makeText,
-  }: Make<B, N>) {
-    const hook = base[form] as Form
-
-    const { note } = hook
-    const makeNote = note as unknown as UnionToIntersection<typeof note>
-    const n = makeNote(link)
-
-    const c = code(hook.code)
-    const t = text(host, c, n)
-
-    super(t)
+  constructor({ host, note, name, link = {}, code }: HaltMesh) {
+    super(note)
 
     Object.defineProperty(this, 'note', {
       enumerable: false,
-      value: n,
+      value: note,
     })
 
     Object.defineProperty(this, 'host', {
@@ -56,20 +82,14 @@ export default class Halt<
       value: host,
     })
 
-    Object.defineProperty(this, 'form', {
-      enumerable: false,
-      value: form,
-    })
-
     Object.defineProperty(this, 'code', {
       enumerable: false,
-      value: c,
+      value: code,
     })
 
     Object.defineProperty(this, 'name', {
       enumerable: false,
-      value: 'Halt',
-      writable: true,
+      value: name,
     })
 
     Object.defineProperty(this, 'link', {
@@ -78,83 +98,21 @@ export default class Halt<
     })
 
     this.host = host
-    this.form = form
-    this.code = c
-    this.note = n
+    this.code = code
+    this.note = note
     this.link = link
+    this.name = name
   }
 
   toJSON(): HaltMesh {
     return {
       code: this.code,
-      form: this.form,
       host: this.host,
       link: this.link,
+      name: this.name,
       note: this.note,
     }
   }
 }
 
-export type HaltMesh = {
-  code: string
-  form: string
-  host: string
-  link: Record<string, unknown>
-  note: string
-}
-
-export type Link<
-  B,
-  N extends keyof B & string = keyof B & string,
-> = Parameters<
-  B[N] extends { note: (link: any) => string } ? B[N]['note'] : never
->[0]
-
-export type Make<B, N extends keyof B & string = keyof B & string> = {
-  base: B
-  code?: (code: number) => string
-  form: N
-  host: string
-  link: Link<B, N>
-  text?: (host: string, code: string, note: string) => string
-}
-
-type UnionToIntersection<U> = (
-  U extends any ? (k: U) => void : never
-) extends (k: infer I) => void
-  ? I
-  : never
-
-export function haveHalt<
-  B,
-  N extends keyof B & string = keyof B & string,
->(lead: unknown): asserts lead is Halt<B, N> {
-  if (!testHalt<B, N>(lead)) {
-    if (lead instanceof Error) {
-      throw lead
-    } else {
-      throw new Error('Not halt')
-    }
-  }
-}
-
-export const makeCode = (code: number) =>
-  code.toString(16).padStart(4, '0').toUpperCase()
-
-export const makeText = (host: string, code: string, note: string) =>
-  `${host} [${code}] ${note}`
-
-export function saveHalt<
-  B,
-  N extends keyof B & string = keyof B & string,
->(list: Array<HaltMesh>, lead: unknown) {
-  haveHalt<B, N>(lead)
-  list.push(lead.toJSON())
-}
-
-export function testHalt<
-  B,
-  N extends keyof B & string = keyof B & string,
->(lead: unknown): lead is Halt<B, N> {
-  return lead instanceof Halt
-}
+export type Link = Record<string, unknown>

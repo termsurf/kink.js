@@ -3,7 +3,7 @@
     "module": "ESNext",
     "target": "ESNext",
     "lib": ["es2020"],
-    "outDir": "host",
+    "outDir": "make",
     "rootDir": ".",
     "sourceMap": true,
     "moduleResolution": "node",
