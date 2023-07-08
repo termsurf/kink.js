@@ -1,13 +1,13 @@
 {
-  "name": "@tunebond/halt",
+  "name": "@tunebond/kink",
   "type": "module",
-  "version": "0.1.6",
-  "main": "./host/index.js",
+  "version": "0.0.1",
+  "main": "./make/index.js",
   "license": "MIT",
   "files": [
-    "./host/index.js",
-    "./host/index.js.map",
-    "./host/index.d.ts"
+    "./make/index.js",
+    "./make/index.js.map",
+    "./make/index.d.ts"
   ],
   "scripts": {
     "make": "tsc && tsc-alias",
@@ -43,7 +43,6 @@
     "typescript": "^5.0.4"
   },
   "dependencies": {
-    "@tunebond/tint": "^0.0.1",
     "ts-custom-error": "^3.3.1"
   }
 }

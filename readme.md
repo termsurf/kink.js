@@ -6,9 +6,9 @@
 <br/>
 <br/>
 
-<h3 align='center'>@tunebond/halt</h3>
+<h3 align='center'>@tunebond/kink</h3>
 <p align='center'>
-  Standard Error Handling in TypeScript
+  Standard Error Creation in TypeScript
 </p>
 
 <br/>
@@ -18,138 +18,43 @@
 ## Installation
 
 ```
-pnpm add @tunebond/halt
-yarn add @tunebond/halt
-npm i @tunebond/halt
+pnpm add @tunebond/kink
+yarn add @tunebond/kink
+npm i @tunebond/kink
 ```
-
-## Overview
-
-You specify errors with a `code` which is an integer, and a `note` which
-is the message generating function.
-
-```ts
-type WithName = {
-  name: string
-}
-
-type WithType = WithName & {
-  type: string
-}
-
-const base = {
-  invalid_form: {
-    code: 3,
-    note: ({ name }: WithName) => `Form '${name}' is not valid`,
-  },
-  invalid_type: {
-    code: 2,
-    note: ({ name, type }: WithType) =>
-      `Value '${name}' is not '${type}' type`,
-  },
-  missing_property: {
-    code: 1,
-    note: ({ name }: WithName) => `Property '${name}' missing`,
-  },
-}
-```
-
-The default integer stringifier for the `code` is like this:
-
-```ts
-export const makeCode = (code: number) =>
-  code.toString(16).padStart(4, '0').toUpperCase()
-```
-
-So it will print `000F` for code number 16, etc.
-
-You can also format the text:
-
-```ts
-export const makeText = (host: string, code: string, note: string) =>
-  `${host} [${code}] ${note}`
-```
-
-So an error message might be like (this is defined for the
-`@tunebond/halt` namespace, but you would have your own namespace):
-
-```
-Halt: @tunebond/halt [0003] Form 'string' is not valid
-... stack trace
-```
-
-This is nice because it gives you slightly better context as to what
-library or app is throwing the error (using the `host` property), and
-the codes make it easier to search the web for the error (if your
-library/app potentially becomes popular).
-
-Finally, you define the `halt` function which you use in your library or
-app, and export it out. A full example of that is next.
 
 ## Example
 
-### Configure the Errors
-
-Say we put these in `./errors`:
-
 ```ts
-import Halt, { Link } from '@tunebond/halt'
+import Kink from '@tunebond/kink'
 
-import { convertIntegerToId } from '../utils/id'
-import { permute8 } from '../utils/prng'
+const host = '@tunebond/kink'
 
-type WithName = {
-  name: string
+type Base = {
+  syntax_error: {}
 }
-
-type WithType = WithName & {
-  type: string
-}
-
-const base = {
-  invalid_form: {
-    code: 3,
-    note: ({ name }: WithName) => `Form '${name}' is not valid`,
-  },
-  invalid_type: {
-    code: 2,
-    note: ({ name, type }: WithType) =>
-      `Value '${name}' is not '${type}' type`,
-  },
-  missing_property: {
-    code: 1,
-    note: ({ name }: WithName) => `Property '${name}' missing`,
-  },
-}
-
-type Base = typeof base
 
 type Name = keyof Base
 
-// you don't have to override this, but you can if you want.
-// it defaults to:
-// `code.toString(16).padStart(4, '0').toUpperCase()`
-// which means it assumes less than 16^4 = 65536
-// 65k errors per namespace, which is plenty.
-const code = (code: number) =>
-  convertIntegerToId(permute8(code)).padStart(4, 'M')
+Kink.base(host, 'syntax_error', () => ({
+  code: 1,
+  note: 'Syntax error',
+}))
 
-export default function halt(form: Name, link: Link<Base, Name>) {
-  return new Halt({ base, form, link, code })
+Kink.code(host, (code: number) => code.toString(16).padStart(4, '0'))
+
+export default function kink<N extends Name>(form: N, link?: Base[N]) {
+  return new Kink(Kink.makeBase(host, form, link))
 }
 ```
 
-### Throw the Errors
-
-Now somewhere else in the code:
-
 ```ts
-import { halt } from './errors'
+import kink from './example.js'
 
 try {
-  throw halt('invalid_type', { name: 'foo', type: 'array' })
+  throw kink('syntax_error')
 } catch (e) {
-  console.log(e.toJSON()) // perfect for REST APIs
+  console.log(e)
 }
 ```
 
@@ -161,13 +66,7 @@ MIT
 
 This is being developed by the folks at [TuneBond](https://tune.bond), a
 California-based project for helping humanity master information and
-computation. TuneBond started off in the winter of 2008 as a spark of an
-idea, to forming a company 10 years later in the winter of 2018, to a
-seed of a project just beginning its development phases. It is entirely
-bootstrapped by working full time and running
-[Etsy](https://etsy.com/shop/tunebond) and
-[Amazon](https://www.amazon.com/s?rh=p_27%3AMount+Build) shops. Also
-find us on [Facebook](https://www.facebook.com/tunebond),
-[Twitter](https://twitter.com/tunebond), and
-[LinkedIn](https://www.linkedin.com/company/tunebond). Check out our
-other GitHub projects as well!
+computation. Find us on[Twitter](https://twitter.com/tunebond),
+[LinkedIn](https://www.linkedin.com/company/tunebond), and
+[Facebook](https://www.facebook.com/tunebond). Check out our other
+[GitHub projects](https://github.com/tunebond) as well!

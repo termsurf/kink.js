@@ -1,33 +1,21 @@
-import Halt, { Link } from './index.js'
 
-type WithName = {
-  name: string
+import Kink from './index.js'
+
+const host = '@tunebond/kink'
+
+type Base = {
+  syntax_error: {}
 }
-
-type WithType = WithName & {
-  type: string
-}
-
-const base = {
-  invalid_form: {
-    code: 3,
-    note: ({ name }: WithName) => `Form '${name}' is not valid`,
-  },
-  invalid_type: {
-    code: 2,
-    note: ({ name, type }: WithType) =>
-      `Value '${name}' is not '${type}' type`,
-  },
-  missing_property: {
-    code: 1,
-    note: ({ name }: WithName) => `Property '${name}' missing`,
-  },
-}
-
-type Base = typeof base
 
 type Name = keyof Base
 
-export default function halt(form: Name, link: Link<Base, Name>) {
-  return new Halt({ base, form, host: '@tunebond/halt', link })
+Kink.base(host, 'syntax_error', () => ({
+  code: 1,
+  note: 'Syntax error'
+}))
+
+Kink.code(host, (code: number) => code.toString(16).padStart(4, '0'))
+
+export default function kink<N extends Name>(form: N, link?: Base[N]) {
+  return new Kink(Kink.makeBase(host, form, link))
 }

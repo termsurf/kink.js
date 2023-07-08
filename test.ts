@@ -1,7 +1,7 @@
-import halt from './example.js'
+import kink from './example.js'
 
 try {
-  throw halt('invalid_form', { name: 'string' })
+  throw kink('syntax_error')
 } catch (e) {
   console.log(e)
 }
