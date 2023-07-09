@@ -24,12 +24,12 @@ export type KinkMeshBase = {
   note: string
 }
 
-export type Link = Record<string, unknown>
-
 const base: Record<string, BaseHook> = {}
 const load: Record<string, LoadHook> = {}
 const fill: Record<string, FillHook> = {}
 const code: Record<string, (code: number) => string> = {}
+
+export type Link = Record<string, unknown>
 
 export default class Kink extends CustomError {
   form: string
@@ -144,3 +144,18 @@ export default class Kink extends CustomError {
 }
 
 export type LoadHook<T extends any = any> = (take?: T) => Link
+
+// eslint-disable-next-line sort-exports/sort-exports
+export class KinkList extends Kink {
+  list: Array<Kink>
+
+  constructor(list: Array<Kink>) {
+    super({
+      code: '0000',
+      form: 'list',
+      host: '@tunebond/kink',
+      note: 'A set of errors occurred',
+    })
+    this.list = list
+  }
+}
