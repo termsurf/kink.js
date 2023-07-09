@@ -2,20 +2,21 @@
 import { CustomError } from 'ts-custom-error'
 
 export type BaseHook<T extends any = any> = (
-  link?: T,
+  take?: T,
 ) => KinkMeshBase & Link
 
-export type FillHook<T extends any = any> = (link?: T) => Link
+export type FillHook<T extends any = any, U extends any = any> = (
+  take?: T,
+  load?: U,
+) => Link
 
 export type KinkMesh = {
   code: string
-  file?: string
   form: string
-  hint?: string
   host: string
   link?: Link
   note: string
-  text?: string
+  take?: Link
 }
 
 export type KinkMeshBase = {
@@ -23,7 +24,10 @@ export type KinkMeshBase = {
   note: string
 }
 
+export type Link = Record<string, unknown>
+
 const base: Record<string, BaseHook> = {}
+const load: Record<string, LoadHook> = {}
 const fill: Record<string, FillHook> = {}
 const code: Record<string, (code: number) => string> = {}
 
@@ -36,13 +40,9 @@ export default class Kink extends CustomError {
 
   note: string
 
-  file?: string
-
-  text?: string
-
-  hint?: string
-
   link: Link
+
+  take?: Link
 
   static base = (host: string, form: string, hook: BaseHook) => {
     base[`${host}:${form}`] = hook
@@ -54,35 +54,51 @@ export default class Kink extends CustomError {
     return Kink
   }
 
+  static load = (host: string, form: string, hook: LoadHook) => {
+    load[`${host}:${form}`] = hook
+    return Kink
+  }
+
   static fill = (host: string, form: string, hook: FillHook) => {
     fill[`${host}:${form}`] = hook
     return Kink
   }
 
-  static makeBase = (host: string, form: string, link?: any) => {
+  static make = (host: string, form: string, take?: any) => {
     const hook = base[`${host}:${form}`]
     if (!hook) {
       throw new Error(`Missing ${host}:${form} in Kink.base`)
     }
-    const hookLink = hook(link) as KinkMeshBase & Link
-    return {
+    const hookLink = hook(take) as KinkMeshBase & Link
+    const kink = new Kink({
       ...hookLink,
       code: Kink.makeCode(host, hookLink.code),
       form,
       host,
-    }
+      take: take as Link,
+    })
+
+    Kink.saveLoad(kink, take)
+
+    return kink
   }
 
-  static makeFill = (host: string, form: string, link?: Link) => {
-    const hook = fill[`${host}:${form}`]
+  static saveLoad = (kink: Kink, take?: any) => {
+    const hook = load[`${kink.host}:${kink.form}`]
     if (!hook) {
-      throw new Error(`Missing ${host}:${form} in Kink.fill`)
+      // throw new Error(`Missing ${kink.host}:${kink.form} in Kink.load`)
+      return
     }
-    const baseFill = Kink.makeBase(host, form, link)
-    return {
-      ...baseFill,
-      ...hook(link),
+    kink.link = hook(take)
+  }
+
+  static saveFill = (kink: Kink) => {
+    const hook = fill[`${kink.host}:${kink.form}`]
+    if (!hook) {
+      // throw new Error(`Missing ${kink.host}:${kink.form} in Kink.fill`)
+      return
     }
+    kink.link = hook(kink.take, kink.link)
   }
 
   static makeCode = (host: string, codeLink: number) => {
@@ -93,65 +109,8 @@ export default class Kink extends CustomError {
     return hook(codeLink)
   }
 
-  constructor({
-    host,
-    note,
-    form,
-    link = {},
-    file,
-    text,
-    hint,
-    code,
-  }: KinkMesh) {
+  constructor({ host, note, form, take, link = {}, code }: KinkMesh) {
     super(note)
-
-    Object.defineProperty(this, 'file', {
-      enumerable: false,
-      value: file,
-      writable: true,
-    })
-
-    Object.defineProperty(this, 'text', {
-      enumerable: false,
-      value: text,
-      writable: true,
-    })
-
-    Object.defineProperty(this, 'hint', {
-      enumerable: false,
-      value: hint,
-      writable: true,
-    })
-
-    Object.defineProperty(this, 'note', {
-      enumerable: false,
-      value: note,
-      writable: true,
-    })
-
-    Object.defineProperty(this, 'host', {
-      enumerable: false,
-      value: host,
-      writable: true,
-    })
-
-    Object.defineProperty(this, 'code', {
-      enumerable: false,
-      value: code,
-      writable: true,
-    })
-
-    Object.defineProperty(this, 'form', {
-      enumerable: false,
-      value: form,
-      writable: true,
-    })
-
-    Object.defineProperty(this, 'link', {
-      enumerable: false,
-      value: link,
-      writable: true,
-    })
 
     Object.defineProperty(this, 'name', {
       enumerable: false,
@@ -159,28 +118,29 @@ export default class Kink extends CustomError {
       writable: true,
     })
 
+    Object.defineProperty(this, 'take', {
+      enumerable: false,
+      value: take,
+      writable: true,
+    })
+
     this.host = host
-    this.file = file
-    this.text = text
-    this.hint = hint
+    this.form = form
     this.code = code
     this.note = note
     this.link = link
-    this.form = form
+    this.take = take
   }
 
   toJSON(): KinkMesh {
     return {
       code: this.code,
-      file: this.file,
       form: this.form,
-      hint: this.hint,
       host: this.host,
       link: this.link,
       note: this.note,
-      text: this.text,
     }
   }
 }
 
-export type Link = Record<string, unknown>
+export type LoadHook<T extends any = any> = (take?: T) => Link
