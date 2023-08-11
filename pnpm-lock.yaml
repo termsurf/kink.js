@@ -5,7 +5,7 @@ settings:
   excludeLinksFromLockfile: false
 
 dependencies:
-  '@tunebond/tint':
+  '@nerdbond/tint':
     specifier: ^0.0.1
     version: 0.0.1
   ts-custom-error:
@@ -506,7 +506,7 @@ packages:
     resolution: {integrity: sha512-vxhUy4J8lyeyinH7Azl1pdd43GJhZH/tP2weN8TntQblOY+A0XbT8DJk1/oCPuOOyg/Ja757rG0CgHcWC8OfMA==}
     dev: true
 
-  /@tunebond/tint@0.0.1:
+  /@nerdbond/tint@0.0.1:
     resolution: {integrity: sha512-MrAFVN60PEuzf6I2heXUCYXefHsjfFY1zWjJJpQ0yqGtaVc7+7won9ZWF/Ud1blgS+Dcwb/h+HMxvCN1DFhX/w==}
     dependencies:
       chalk: 5.2.0

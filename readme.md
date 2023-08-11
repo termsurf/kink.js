@@ -6,7 +6,7 @@
 <br/>
 <br/>
 
-<h3 align='center'>@tunebond/kink</h3>
+<h3 align='center'>@nerdbond/kink</h3>
 <p align='center'>
   Standard Error Creation in TypeScript
 </p>
@@ -18,17 +18,17 @@
 ## Installation
 
 ```
-pnpm add @tunebond/kink
-yarn add @tunebond/kink
-npm i @tunebond/kink
+pnpm add @nerdbond/kink
+yarn add @nerdbond/kink
+npm i @nerdbond/kink
 ```
 
 ## Example
 
 ```ts
-import Kink from '@tunebond/kink'
+import Kink from '@nerdbond/kink'
 
-const host = '@tunebond/kink'
+const host = '@nerdbond/kink'
 
 type Base = {
   syntax_error: {}
@@ -62,11 +62,11 @@ try {
 
 MIT
 
-## TuneBond
+## NerdBond
 
-This is being developed by the folks at [TuneBond](https://tune.bond), a
+This is being developed by the folks at [NerdBond](https://nerd.bond), a
 California-based project for helping humanity master information and
-computation. Find us on [Twitter](https://twitter.com/tunebond),
-[LinkedIn](https://www.linkedin.com/company/tunebond), and
-[Facebook](https://www.facebook.com/tunebond). Check out our other
-[GitHub projects](https://github.com/tunebond) as well!
+computation. Find us on [Twitter](https://twitter.com/nerdbond),
+[LinkedIn](https://www.linkedin.com/company/nerdbond), and
+[Facebook](https://www.facebook.com/nerdbond). Check out our other
+[GitHub projects](https://github.com/nerdbond) as well!

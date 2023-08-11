@@ -1,5 +1,5 @@
 {
-  "name": "@tunebond/kink",
+  "name": "@nerdbond/kink",
   "type": "module",
   "version": "0.0.3",
   "main": "./make/index.js",

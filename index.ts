@@ -153,7 +153,7 @@ export class KinkList extends Kink {
     super({
       code: '0000',
       form: 'list',
-      host: '@tunebond/kink',
+      host: '@nerdbond/kink',
       note: 'A set of errors occurred',
     })
     this.list = list

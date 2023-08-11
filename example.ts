@@ -1,6 +1,6 @@
 import Kink from './index.js'
 
-const host = '@tunebond/kink'
+const host = '@nerdbond/kink'
 
 type Base = {
   syntax_error: {}
