@@ -109,6 +109,18 @@ export default class Kink extends CustomError {
     return hook(codeLink)
   }
 
+  static makeBase = (kink: Error, { stack = false } = {}) => {
+    return {
+      host: 'system',
+      code:
+        'code' in kink && typeof kink.code === 'string'
+          ? kink.code
+          : '0000',
+      note: kink.message,
+      list: stack ? kink.stack?.split('\n') ?? [] : undefined,
+    }
+  }
+
   constructor({ host, note, form, take, link = {}, code }: KinkMesh) {
     super(note)
 

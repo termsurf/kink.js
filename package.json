@@ -1,7 +1,7 @@
 {
   "name": "@nerdbond/kink",
   "type": "module",
-  "version": "0.0.3",
+  "version": "0.1.0",
   "main": "./make/index.js",
   "license": "MIT",
   "files": [
