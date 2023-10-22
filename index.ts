@@ -16,6 +16,8 @@ export type KinkMesh = {
   host: string
   link?: Link
   note: string
+  // HTTP code
+  siteCode?: number
   take?: Link
 }
 
@@ -41,6 +43,8 @@ export default class Kink extends CustomError {
   note: string
 
   link: Link
+
+  siteCode?: number
 
   take?: Link
 
@@ -111,17 +115,25 @@ export default class Kink extends CustomError {
 
   static makeBase = (kink: Error, { stack = false } = {}) => {
     return {
-      host: 'system',
       code:
         'code' in kink && typeof kink.code === 'string'
           ? kink.code
           : '0000',
-      note: kink.message,
+      host: 'system',
       list: stack ? kink.stack?.split('\n') ?? [] : undefined,
+      note: kink.message,
     }
   }
 
-  constructor({ host, note, form, take, link = {}, code }: KinkMesh) {
+  constructor({
+    siteCode,
+    host,
+    note,
+    form,
+    take,
+    link = {},
+    code,
+  }: KinkMesh) {
     super(note)
 
     Object.defineProperty(this, 'name', {
@@ -142,6 +154,7 @@ export default class Kink extends CustomError {
     this.note = note
     this.link = link
     this.take = take
+    this.siteCode = siteCode
   }
 
   toJSON(): KinkMesh {

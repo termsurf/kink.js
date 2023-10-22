@@ -6,7 +6,7 @@
 <br/>
 <br/>
 
-<h3 align='center'>@nerdbond/kink</h3>
+<h3 align='center'>@wavebond/kink</h3>
 <p align='center'>
   Standard Error Creation in TypeScript
 </p>
@@ -18,17 +18,17 @@
 ## Installation
 
 ```
-pnpm add @nerdbond/kink
-yarn add @nerdbond/kink
-npm i @nerdbond/kink
+pnpm add @wavebond/kink
+yarn add @wavebond/kink
+npm i @wavebond/kink
 ```
 
 ## Example
 
 ```ts
-import Kink from '@nerdbond/kink'
+import Kink from '@wavebond/kink'
 
-const host = '@nerdbond/kink'
+const host = '@wavebond/kink'
 
 type Base = {
   syntax_error: {}
@@ -62,11 +62,11 @@ try {
 
 MIT
 
-## NerdBond
+## WaveBond
 
-This is being developed by the folks at [NerdBond](https://nerd.bond), a
+This is being developed by the folks at [WaveBond](https://wave.bond), a
 California-based project for helping humanity master information and
-computation. Find us on [Twitter](https://twitter.com/nerdbond),
-[LinkedIn](https://www.linkedin.com/company/nerdbond), and
-[Facebook](https://www.facebook.com/nerdbond). Check out our other
-[GitHub projects](https://github.com/nerdbond) as well!
+computation. Find us on [Twitter](https://twitter.com/wavebond),
+[LinkedIn](https://www.linkedin.com/company/wavebond), and
+[Facebook](https://www.facebook.com/wavebond). Check out our other
+[GitHub projects](https://github.com/wavebond) as well!
