@@ -1,5 +1,5 @@
 {
-  "name": "@wavebond/kink",
+  "name": "@textsurf/kink",
   "type": "module",
   "version": "0.1.1",
   "main": "./make/index.js",

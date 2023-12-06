@@ -6,7 +6,7 @@
 <br/>
 <br/>
 
-<h3 align='center'>@wavebond/kink</h3>
+<h3 align='center'>@textsurf/kink</h3>
 <p align='center'>
   Standard Error Creation in TypeScript
 </p>
@@ -18,17 +18,17 @@
 ## Installation
 
 ```
-pnpm add @wavebond/kink
-yarn add @wavebond/kink
-npm i @wavebond/kink
+pnpm add @textsurf/kink
+yarn add @textsurf/kink
+npm i @textsurf/kink
 ```
 
 ## Example
 
 ```ts
-import Kink from '@wavebond/kink'
+import Kink from '@textsurf/kink'
 
-const host = '@wavebond/kink'
+const host = '@textsurf/kink'
 
 type Base = {
   syntax_error: {}
@@ -62,11 +62,11 @@ try {
 
 MIT
 
-## WaveBond
+## TextSurf
 
-This is being developed by the folks at [WaveBond](https://wave.bond), a
+This is being developed by the folks at [TextSurf](https://text.surf), a
 California-based project for helping humanity master information and
-computation. Find us on [Twitter](https://twitter.com/wavebond),
-[LinkedIn](https://www.linkedin.com/company/wavebond), and
-[Facebook](https://www.facebook.com/wavebond). Check out our other
-[GitHub projects](https://github.com/wavebond) as well!
+computation. Find us on [Twitter](https://twitter.com/textsurf),
+[LinkedIn](https://www.linkedin.com/company/textsurf), and
+[Facebook](https://www.facebook.com/textsurf). Check out our other
+[GitHub projects](https://github.com/textsurf) as well!
