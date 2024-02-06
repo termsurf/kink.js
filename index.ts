@@ -120,7 +120,7 @@ export default class Kink extends CustomError {
           ? kink.code
           : '0000',
       host: 'system',
-      list: stack ? kink.stack?.split('\n') ?? [] : undefined,
+      list: stack ? kink.stack?.split('\n') ?? [] : [],
       note: kink.message,
     }
   }
