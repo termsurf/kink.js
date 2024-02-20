@@ -113,16 +113,28 @@ export default class Kink extends CustomError {
     return hook(codeLink)
   }
 
-  static makeBase = (kink: Error, { stack = false } = {}) => {
-    return {
+  static makeBase = (
+    kink: Error,
+    {
+      siteCode,
+      stack = false,
+    }: { siteCode?: number; stack?: boolean } = {},
+  ) => {
+    return new Kink({
       code:
-        'code' in kink && typeof kink.code === 'string'
-          ? kink.code
+        'code' in kink
+          ? typeof kink.code === 'string'
+            ? kink.code
+            : typeof kink.code === 'number'
+            ? Kink.makeCode('system', kink.code)
+            : '0000'
           : '0000',
+      form: 'system_error',
       host: 'system',
-      list: stack ? kink.stack?.split('\n') ?? [] : [],
+      // list: stack ? kink.stack?.split('\n') ?? [] : [],
       note: kink.message,
-    }
+      siteCode,
+    })
   }
 
   constructor({
@@ -176,10 +188,10 @@ export class KinkList extends Kink {
 
   constructor(list: Array<Kink>) {
     super({
-      code: '0000',
+      code: Kink.makeCode('@termsurf/kink', 0),
       form: 'list',
       host: '@termsurf/kink',
-      note: 'A set of errors occurred',
+      note: 'A set of errors occurred.',
     })
     this.list = list
   }
